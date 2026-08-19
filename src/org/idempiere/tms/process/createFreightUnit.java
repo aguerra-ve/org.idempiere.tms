@@ -23,7 +23,9 @@ package org.idempiere.tms.process;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import org.compiere.model.Query;
 import org.compiere.process.ProcessInfoParameter;
@@ -32,6 +34,7 @@ import org.compiere.util.Env;
 import org.idempiere.tms.base.CustomProcess;
 import org.idempiere.tms.model.MDDOTR;
 import org.idempiere.tms.model.MDDOtrLine;
+import org.idempiere.tms.model.MDDProductNesting;
 import org.idempiere.tms.model.MDDTransportUnit;
 
 import java.math.RoundingMode;
@@ -52,6 +55,15 @@ public class createFreightUnit extends CustomProcess  {
 	
 	private MDDTransportUnit tu =null;
 	private MDDOTR otr =null;
+
+	/**
+	 * Nesting-adjusted volume-per-unit for the current batch, keyed by M_Product.Classification.
+	 * Populated once per doIt() run by computeNestedVolumePerUnit(); consulted by createFU().
+	 * Only classifications that belong to a DD_ProductNesting family appear here — everything
+	 * else falls through to the original flat qty x M_Product.Volume behavior unchanged.
+	 * See MDDProductNesting.allocateFootprintVolume() for the algorithm and its caveats.
+	 */
+	private Map<String, BigDecimal> nestedVolumePerUnit = new HashMap<String, BigDecimal>();
 	
 	/** Date Drom				*/
 	private Timestamp	p_DateFrom = null;
@@ -114,13 +126,103 @@ public class createFreightUnit extends CustomProcess  {
 			List <MDDOTR> otrs = new Query(getCtx(), MDDOTR.Table_Name, whereClause.toString(), get_TrxName())
 											.setParameters(parameters)
 											.setOrderBy(" ORDER BY datepromised ")
-											.list(); 
+											.list();
+
+				computeNestedVolumePerUnit(otrs);
+
 				for(MDDOTR otr : otrs)
-				{	
-					createFU(otr.getDD_OTR_ID());				
+				{
+					createFU(otr.getDD_OTR_ID());
 				}
-		
+
 		return processVerNo+result+fu_count+"|"+debug;
+	}
+
+	/**
+	 * Precomputes nesting-adjusted volume-per-unit for every product Classification present in
+	 * this batch that belongs to a DD_ProductNesting family, and stores it in nestedVolumePerUnit.
+	 *
+	 * Products with no Classification, or a Classification not registered in DD_ProductNesting
+	 * (e.g. Australiano/Botella families, not yet defined as of this writing), are simply absent
+	 * from the resulting map — createFU() falls back to the original flat calculation for those.
+	 */
+	private void computeNestedVolumePerUnit(List<MDDOTR> otrs)
+	{
+		// qty (QtyOrdered - QtyDelivered) and full Volume per Classification present in this batch
+		Map<String, BigDecimal> qtyByClassification = new HashMap<String, BigDecimal>();
+		Map<String, BigDecimal> volumeByClassification = new HashMap<String, BigDecimal>();
+
+		for (MDDOTR o : otrs)
+		{
+			String classification = o.getM_Product().getClassification();
+			if (classification == null || classification.trim().length() == 0)
+				continue;
+
+			BigDecimal qty = o.getQtyOrdered().subtract(o.getQtyDelivered());
+			BigDecimal existingQty = qtyByClassification.get(classification);
+			qtyByClassification.put(classification, existingQty == null ? qty : existingQty.add(qty));
+			volumeByClassification.put(classification, o.getM_Product().getVolume());
+		}
+
+		if (qtyByClassification.isEmpty())
+			return;
+
+		// which of those classifications actually have a nesting family, and their size rank
+		Map<String, String> familyByClassification = new HashMap<String, String>();
+		Map<String, Integer> seqNoByClassification = new HashMap<String, Integer>();
+
+		List<MDDProductNesting> nestingRows = new Query(getCtx(), MDDProductNesting.Table_Name,
+				"Classification IN (" + buildInClauseParams(qtyByClassification.size()) + ")", get_TrxName())
+				.setParameters(new ArrayList<Object>(qtyByClassification.keySet()))
+				.list();
+
+		for (MDDProductNesting row : nestingRows)
+		{
+			familyByClassification.put(row.getClassification(), row.getNestingFamily());
+			seqNoByClassification.put(row.getClassification(), row.getSeqNo());
+		}
+
+		if (familyByClassification.isEmpty())
+			return; // nothing in this batch belongs to any defined family yet
+
+		// group by NestingFamily, then allocate footprint volume within each family independently
+		Map<String, Map<String, BigDecimal>> qtyByFamily = new HashMap<String, Map<String, BigDecimal>>();
+		Map<String, Map<String, Integer>> seqNoByFamily = new HashMap<String, Map<String, Integer>>();
+		Map<String, Map<String, BigDecimal>> volumeByFamily = new HashMap<String, Map<String, BigDecimal>>();
+
+		for (Map.Entry<String, String> entry : familyByClassification.entrySet())
+		{
+			String classification = entry.getKey();
+			String family = entry.getValue();
+
+			if (!qtyByFamily.containsKey(family))
+			{
+				qtyByFamily.put(family, new HashMap<String, BigDecimal>());
+				seqNoByFamily.put(family, new HashMap<String, Integer>());
+				volumeByFamily.put(family, new HashMap<String, BigDecimal>());
+			}
+			qtyByFamily.get(family).put(classification, qtyByClassification.get(classification));
+			seqNoByFamily.get(family).put(classification, seqNoByClassification.get(classification));
+			volumeByFamily.get(family).put(classification, volumeByClassification.get(classification));
+		}
+
+		for (String family : qtyByFamily.keySet())
+		{
+			Map<String, BigDecimal> allocation = MDDProductNesting.allocateFootprintVolume(
+					qtyByFamily.get(family), seqNoByFamily.get(family), volumeByFamily.get(family));
+			nestedVolumePerUnit.putAll(allocation);
+		}
+	}
+
+	private String buildInClauseParams(int count)
+	{
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < count; i++)
+		{
+			if (i > 0) sb.append(",");
+			sb.append("?");
+		}
+		return sb.toString();
 	}
 	
 	public void createFU(int otr_id)
@@ -132,7 +234,18 @@ public class createFreightUnit extends CustomProcess  {
 		otr  =new MDDOTR(getCtx(), otr_id, get_TrxName());
 	
 		BigDecimal fu_qty = otr.getQtyOrdered().subtract(otr.getQtyDelivered());
-		BigDecimal fu_volume = fu_qty.multiply(otr.getM_Product().getVolume().setScale(3, RoundingMode.DOWN));
+
+		// Nesting-aware volume: if this product's Classification belongs to a DD_ProductNesting
+		// family present in this batch, use the per-unit volume computed by computeNestedVolumePerUnit()
+		// (which accounts for units sharing a truck footprint with a larger sibling) instead of the
+		// full M_Product.Volume for every unit independently. See MDDProductNesting.allocateFootprintVolume()
+		// for the algorithm; weight is never affected by nesting (a nested tank still weighs what it weighs).
+		String classification = otr.getM_Product().getClassification();
+		BigDecimal volumePerUnit = (classification != null) ? nestedVolumePerUnit.get(classification) : null;
+		if (volumePerUnit == null)
+			volumePerUnit = otr.getM_Product().getVolume();
+
+		BigDecimal fu_volume = fu_qty.multiply(volumePerUnit.setScale(3, RoundingMode.DOWN));
 		BigDecimal fu_weight = fu_qty.multiply(otr.getM_Product().getWeight().setScale(3, RoundingMode.DOWN));
 
 		
@@ -167,6 +280,11 @@ public class createFreightUnit extends CustomProcess  {
 				else 
 					fu_weight3=fu_weight2;
 								
+				// TODO: this per-pallet split (when a single OTR's own quantity alone exceeds the
+				// transport unit's capacity) still uses the full M_Product.Volume, not the nesting-aware
+				// volumePerUnit computed above. Not addressed in this pass: this path only triggers when
+				// one product's own quantity is large enough to exceed the whole vehicle by itself, which
+				// nesting reduces the likelihood of but does not eliminate.
 				fu_volume3=fu_weight3.divide(otr.getM_Product().getWeight(),2, RoundingMode.HALF_UP).multiply(otr.getM_Product().getVolume());
 
 //				if(fu_volume2.compareTo(tu.getMaximumVolume())==1)

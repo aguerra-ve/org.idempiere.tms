@@ -77,6 +77,8 @@ public class TMSModelFactory extends CustomModelFactory {
 
 		registerTableModel(org.idempiere.tms.model.MDDGPSDevice.Table_Name, org.idempiere.tms.model.MDDGPSDevice.class);
 		registerTableModel(org.idempiere.tms.model.MDDGPSPosition.Table_Name, org.idempiere.tms.model.MDDGPSPosition.class);
+
+		registerTableModel(org.idempiere.tms.model.MDDProductNesting.Table_Name, org.idempiere.tms.model.MDDProductNesting.class);
 	}
 
 }

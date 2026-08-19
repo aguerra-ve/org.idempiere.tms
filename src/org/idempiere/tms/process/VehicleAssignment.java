@@ -199,6 +199,11 @@ public class  VehicleAssignment extends CustomProcess  {
 	}
 	
 	
+	// TODO: this mirrors createFreightUnit.createFU()'s weight/volume split, but not its
+	// nesting-aware volume adjustment (see MDDProductNesting.allocateFootprintVolume() and
+	// createFreightUnit.computeNestedVolumePerUnit()). If products sharing a DD_ProductNesting
+	// family end up assigned to vehicles through this path, the same adjustment should be ported
+	// here — not done in this pass, out of scope.
 	public void calculateWeight1(MDDOtrLine m_otrl, MDDVehicle m_vehicle)
 	{
 		String fu_name="";	
