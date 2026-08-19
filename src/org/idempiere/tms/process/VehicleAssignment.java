@@ -199,19 +199,22 @@ public class  VehicleAssignment extends CustomProcess  {
 	}
 	
 	
-	// TODO: this mirrors createFreightUnit.createFU()'s weight/volume split, but not its
-	// nesting-aware volume adjustment (see MDDProductNesting.allocateFootprintVolume() and
-	// createFreightUnit.computeNestedVolumePerUnit()). If products sharing a DD_ProductNesting
-	// family end up assigned to vehicles through this path, the same adjustment should be ported
-	// here — not done in this pass, out of scope.
 	public void calculateWeight1(MDDOtrLine m_otrl, MDDVehicle m_vehicle)
 	{
-		String fu_name="";	
-		
+		String fu_name="";
+
 		BigDecimal fu_qty = m_otrl.getQtyOrdered().subtract(m_otrl.getQtyDelivered());
 		BigDecimal fu_volume = m_otrl.getWeight();
 		BigDecimal fu_weight = m_otrl.getVolume();
-		
+
+		// Nesting-aware volume-per-unit for this line: DD_OTRLine.Volume was already set by
+		// createFreightUnit.addOTRLine() from MDDProductNesting.allocateFootprintVolume() when this
+		// line was created, so dividing it back out by qty recovers that same nesting-adjusted
+		// per-unit volume instead of recomputing the full, un-nested M_Product.Volume below.
+		BigDecimal volumePerUnit = (fu_qty.signum() != 0)
+				? m_otrl.getVolume().divide(fu_qty, 6, RoundingMode.HALF_UP)
+				: m_otrl.getDD_OTR().getM_Product().getVolume();
+
 		if(//fu_volume.setScale(3, RoundingMode.DOWN).compareTo(m_vehicle.getMaximumVolume()) >0 ||
 				fu_weight.setScale(3, RoundingMode.DOWN).compareTo(m_vehicle.getMaximumWeight()) >0){	
 			//then maxweight				
@@ -235,7 +238,7 @@ public class  VehicleAssignment extends CustomProcess  {
 				else 
 					vh_weight3=vh_weight2;
 								
-				vh_volume3=vh_weight3.divide(m_otrl.getDD_OTR().getM_Product().getWeight(),2, RoundingMode.HALF_UP).multiply(m_otrl.getDD_OTR().getM_Product().getVolume());
+				vh_volume3=vh_weight3.divide(m_otrl.getDD_OTR().getM_Product().getWeight(),2, RoundingMode.HALF_UP).multiply(volumePerUnit);
 
 					vh_weight2=vh_weight2.subtract(m_vehicle.getMaximumWeight());						
 					vh_count++;  //fu_no++;
