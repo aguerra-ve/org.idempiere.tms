@@ -27,6 +27,7 @@ import org.adempiere.webui.session.SessionManager;
 import org.adempiere.webui.util.ZKUpdateUtil;
 import org.adempiere.webui.window.FDialog;
 import org.compiere.model.MLocation;
+import org.idempiere.ui.zk.annotation.Form;
 import org.compiere.util.DB;
 import org.compiere.util.Env;
 import org.compiere.util.KeyNamePair;
@@ -39,6 +40,7 @@ import org.zkoss.zul.Borderlayout;
 import org.zkoss.zul.Iframe;
 
 
+@Form(name = "org.idempiere.tms.form.MapViewForm")
 public class MapViewForm  implements IFormController,EventListener {
 
  	private CustomForm form = new CustomForm();
@@ -124,7 +126,9 @@ public class MapViewForm  implements IFormController,EventListener {
 		ArrayList<KeyNamePair> FOData = getFOData();
 		for(KeyNamePair pp : FOData)
 			fieldFO.appendItem(pp.getName(), pp);
-		fieldFO.setSelectedIndex(1);		
+		fieldFO.setSelectedIndex(FOData.size() > 1 ? 1 : 0);
+		bCreate.setDisabled(FOData.size() <= 1);
+		bgmapURL.setDisabled(FOData.size() <= 1);
 	}	//	dynInit
 	
 	/**

@@ -6,13 +6,17 @@ Bundle-Version: 12.0.0.qualifier
 Bundle-ClassPath: .,
  lib/axis.jar,
  lib/directions-api-client.jar
-Bundle-Activator: org.adempiere.plugin.utils.Incremental2PackActivator
+Bundle-Activator: org.idempiere.tms.component.TMSActivator
 Export-Package: org.eevolution.fms.process,
  org.idempiere.acct,
  org.idempiere.tms.base,
  org.idempiere.tms.component,
  org.idempiere.tms.event,
  org.idempiere.tms.form,
+ org.idempiere.tms.mapview.form,
+ org.idempiere.tms.mapview.map,
+ org.idempiere.tms.mapview.model,
+ org.idempiere.tms.mapview.repository,
  org.idempiere.tms.model,
  org.idempiere.tms.process,
  org.idempiere.tms.util
@@ -28,10 +32,10 @@ Require-Bundle: org.adempiere.base;bundle-version="7.1.0",
  zhtml;bundle-version="8.6.0",
  zul;bundle-version="8.6.0",
  com.sun.activation.jakarta.activation;bundle-version="1.2.1"
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Automatic-Module-Name: org.idempiere.tms;singleton:=true
-Service-Component: OSGI-INF/TMSModelFactory.xml,OSGI-INF/TMSEventManager.xml,OSGI-INF/TMSCalloutFactory.xml,OSGI-INF/TMSProcessFactory.xml,OSGI-INF/TMSDocFactory.xml
+Service-Component: OSGI-INF/TMSModelFactory.xml,OSGI-INF/TMSEventManager.xml,OSGI-INF/TMSCalloutFactory.xml,OSGI-INF/TMSProcessFactory.xml,OSGI-INF/TMSDocFactory.xml,OSGI-INF/TMSFormFactory.xml
 Import-Package: org.apache.commons.io;version="2.2.0",
  org.apache.ecs.xhtml,
  org.apache.http;version="4.4.6",

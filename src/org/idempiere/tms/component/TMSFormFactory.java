@@ -20,25 +20,14 @@
 
 package org.idempiere.tms.component;
 
-import org.idempiere.tms.base.CustomFormFactory;
+import org.adempiere.webui.factory.AnnotationBasedFormFactory;
 
-/**
- * Form Factory
- */
-public class TMSFormFactory extends CustomFormFactory {
+/** Discovers the TMS forms annotated for the iDempiere 12 WebUI. */
+public class TMSFormFactory extends AnnotationBasedFormFactory {
 
-	/**
-	 * For initialize class. Register the custom forms to build
-	 * 
-	 * <pre>
-	 * protected void initialize() {
-	 * 	registerForm(FPrintPluginInfo.class);
-	 * }
-	 * </pre>
-	 */
 	@Override
-	protected void initialize() {
-
+	protected String[] getPackages() {
+		return new String[] { "org.idempiere.tms.form", "org.idempiere.tms.mapview.form" };
 	}
 
 }

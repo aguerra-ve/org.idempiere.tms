@@ -1,4 +1,10 @@
 /target/
+/.env
+
+# Local browser-test dependencies and generated results
+/ui-tests/node_modules/
+/ui-tests/test-results/
+/ui-tests/playwright-report/
 
 # rsc local state (hooks, seals, logs) and managed skill links — machine-local
 .rsc/
@@ -39,6 +45,7 @@
 .codex/agents/refuter-correctness.toml
 .codex/agents/refuter-security.toml
 .codex/agents/refuter-tests.toml
+
 # Cursor rsc state, skills, agents, and generated commands — machine-local
 .cursor/rules/analyze.mdc
 .cursor/rules/automation-strategy.mdc
@@ -93,8 +100,10 @@
 .cursor/commands/specify.md
 .cursor/commands/tasks.md
 .cursor/commands/verify.md
+
 # rsc harness audit reports are local, per-run artifacts
 02-DOCS/audits/*.html
+
 # rsc local state (hooks, seals, logs) and managed skill links — machine-local
 .codex/rsc/e2e-testing
 .cursor/rules/e2e-testing.mdc
@@ -103,6 +112,10 @@
 .codex/agents/finding-verifier.toml
 .cursor/rules/connect-tool.mdc
 .cursor/agents/finding-verifier.md
+
+# Local Playwright CLI session artifacts
+.playwright-cli/
+
 # rsc local state (hooks, seals, logs) and managed skill links — machine-local
 .codex/rsc/idempiere-deployment
 .codex/rsc/idempiere-implementation
@@ -127,3 +140,8 @@
 .cursor/rules/idempiere-plugin-compiler.mdc
 .codex/rsc/idempiere-2pack
 .cursor/rules/idempiere-2pack.mdc
+
+# Salidas generadas y de build: no se versionan
+/output/
+/tests/nesting/target/
+/02-DOCS/wiki/ftd/evidence/

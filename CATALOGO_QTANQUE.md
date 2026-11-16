@@ -2,7 +2,7 @@
 
 Extraído de [qtanque.com.ve](https://qtanque.com.ve) (Industrias Q'Productos, S.A., Santa Cruz de Aragua, Venezuela) el 2026-07-27. Todos los tanques son de **PEMD** (polietileno virgen de media densidad), con protección UV, spud/conexión de 3/4" salvo donde se indique. El fabricante aclara que las dimensiones pueden variar hasta 3% por el proceso de fabricación.
 
-> **Uso:** esta tabla es la fuente para poblar `M_Product.Volume` (y `Weight`) en iDempiere — hoy están en `0`. La columna **Cap. Total (L)** es el valor a cargar en `Volume` (asumiendo UOM = Litro). No confundir con **Cap. Útil**, que es la capacidad real de llenado (descontando el espacio del flotante) — dato de negocio, no de logística de transporte.
+> **Uso actual en QTanque:** esta tabla respalda dimensiones del cuerpo por modelo y permite contrastar el peso existente. La carga acotada de 2026-09-24 convirtió centímetros a milímetros para `ShelfWidth`, `ShelfHeight` y `ShelfDepth`, sin incluir la tapa, según la convención confirmada por el operador. Los pesos maestros se conservaron cuando difieren del catálogo. **Cap. Total (L)** y **Cap. Útil (L)** describen líquido contenido; ninguna de las dos se carga en `M_Product.Volume` como volumen de transporte. `Volume` quedó sin cambios en la [carga por familia](02-DOCS/wiki/ftd/qtanque-family-physical-data.md).
 
 ## Cilíndricos
 

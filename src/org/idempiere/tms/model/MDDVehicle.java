@@ -28,6 +28,29 @@ import java.util.Properties;
  */
 public class MDDVehicle extends X_DD_Vehicle {
 
+    public static final String COLUMNNAME_LicensePlate = "LicensePlate";
+
+    public String getLicensePlate() {
+        return get_ColumnIndex(COLUMNNAME_LicensePlate) < 0 ? null : (String)get_Value(COLUMNNAME_LicensePlate);
+    }
+
+    public void setLicensePlate(String plate) {
+        set_Value(COLUMNNAME_LicensePlate,
+            org.idempiere.tms.mapview.model.LicensePlate.normalize(plate));
+    }
+
+    @Override
+    protected boolean beforeSave(boolean newRecord) {
+        if (get_ColumnIndex(COLUMNNAME_LicensePlate) >= 0) {
+            try { setLicensePlate(getLicensePlate()); }
+            catch (IllegalArgumentException invalid) {
+                log.saveError("Error", invalid.getMessage());
+                return false;
+            }
+        }
+        return super.beforeSave(newRecord);
+    }
+
 
     /**
      * Construtor Vehicle
