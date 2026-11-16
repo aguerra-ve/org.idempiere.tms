@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<idempiere Name="2Pack_2.3.0_TMSPredispatch" Version="2.3.0"
+    idempiereVersion="12" DataBaseVersion=""
+    Description="Mapa de pedidos de solo lectura para TMS"
+    Author="IQP" AuthorEmail="" CreatedDate="2026-09-21 21:00:00"
+    UpdatedDate="2026-09-21 21:00:00" PackOutVersion="100"
+    UpdateDictionary="false" Client="0-SYSTEM-System"
+    AD_Client_UU="11237b53-9592-4af1-b3c5-afd216514b5d">
+    <AD_Menu type="table">
+        <Parent_ID reference="uuid" reference-key="AD_Menu">1a062a4a-9a98-47e5-9667-5a507ef41263</Parent_ID>
+        <SeqNo>10</SeqNo>
+        <AD_Client_ID>0</AD_Client_ID>
+        <AD_Org_ID>0</AD_Org_ID>
+        <Name>Mapa de Predespacho</Name>
+        <Description>Pedidos pendientes e histórico de siete días</Description>
+        <Action>X</Action>
+        <AD_Window_ID reference="id"/>
+        <AD_Workflow_ID reference="id"/>
+        <AD_Task_ID reference="id"/>
+        <IsActive>Y</IsActive>
+        <IsSummary>N</IsSummary>
+        <AD_Process_ID reference="id"/>
+        <IsSOTrx>Y</IsSOTrx>
+        <AD_Form_ID reference="uuid" reference-key="AD_Form">7d83e978-12ed-4048-a1c2-6eb964766c69</AD_Form_ID>
+        <IsReadOnly>Y</IsReadOnly>
+        <EntityType>TMS</EntityType>
+        <IsCentrallyMaintained>N</IsCentrallyMaintained>
+        <AD_Menu_UU>6494876a-7e18-4966-a090-1c02485d7e6a</AD_Menu_UU>
+        <AD_InfoWindow_ID reference="id"/>
+        <PredefinedContextVariables/>
+        <AD_Form type="table">
+            <AD_Client_ID>0</AD_Client_ID>
+            <AD_Org_ID>0</AD_Org_ID>
+            <AccessLevel>3</AccessLevel>
+            <Classname>org.idempiere.tms.mapview.form.PredispatchMapForm</Classname>
+            <Help>Consulta y selección visual de solo lectura. No crea entregas ni reservas.</Help>
+            <JSPURL/>
+            <IsBetaFunctionality>Y</IsBetaFunctionality>
+            <EntityType>TMS</EntityType>
+            <AD_Form_UU>7d83e978-12ed-4048-a1c2-6eb964766c69</AD_Form_UU>
+            <Description>Mapa nativo de pedidos de venta para despacho</Description>
+            <Name>Mapa de Predespacho</Name>
+            <IsActive>Y</IsActive>
+            <AD_CtxHelp_ID reference="id"/>
+        </AD_Form>
+    </AD_Menu>
+</idempiere>
