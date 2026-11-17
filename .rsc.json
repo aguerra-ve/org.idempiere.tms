@@ -53,10 +53,10 @@
     "refuter-tests"
   ],
   "ownSkills": [],
-  "catalogVersion": "4.1.7-aguerrave.3",
+  "catalogVersion": "4.1.7-aguerrave.4",
   "source": {
     "repository": "https://github.com/aguerrave/rsc-harness",
-    "ref": "v4.1.7-aguerrave.3",
+    "ref": "v4.1.7-aguerrave.4",
     "upstream": "https://github.com/ericrisco/rsc-harness",
     "upstreamVersion": "4.1.7"
   },
