@@ -1,0 +1,17 @@
+# Paths the Auto-Ingest Sweep must never scan as knowledge sources.
+node_modules/
+.git/
+.next/
+dist/
+build/
+target/
+.venv/
+__pycache__/
+.dart_tool/
+.pytest_cache/
+.ruff_cache/
+01-TOOLS/
+02-DOCS/inbox/_processed/
+02-DOCS/raw/
+02-DOCS/wiki/
+.DS_Store

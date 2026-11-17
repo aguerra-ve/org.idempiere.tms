@@ -1,0 +1,26 @@
+{
+  "_meta": {
+    "interactions_since_improve": 0,
+    "generated": "2026-09-21T18:54:40Z"
+  },
+  "project/Project Overview.md": 13.0,
+  "v1/V1 Baseline and Invariants.md": 10.0,
+  "v2/V2 Requirements and Gap.md": 11.0,
+  "v2/V2 Physical Implementation Plan.md": 10.0,
+  "logistics/Physical Nesting Model.md": 12.0,
+  "architecture/Technical Architecture.md": 10.0,
+  "plugins/MapView Plugin Reference.md": 9.0,
+  "operations/Operational Tooling.md": 4.0,
+  "meta/Workspace Control Plane.md": 5.0,
+  "harness/user-profile.md": 1.0,
+  "harness/decisions.md": 1.0,
+  "harness/installation-plan.md": 1.0,
+  "ftd/initialize-git-root.md": 1.0,
+  "ftd/import-previous-context.md": 1.0,
+  "ftd/apply-rsc-onboarding.md": 1.0,
+  "ftd/incorporate-target-plugin-branch.md": 1.0,
+  "sdd/constitution.md": 1.0,
+  "sdd/proposals/secure-nesting-first-cycle.md": 1.0,
+  "sdd/specs/safe-product-nesting.md": 1.0,
+  "sdd/plans/safe-product-nesting.md": 1.0
+}

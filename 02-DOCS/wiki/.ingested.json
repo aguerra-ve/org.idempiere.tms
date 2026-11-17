@@ -1,0 +1,17 @@
+{
+  "CLAUDE.md": {
+    "hash": "sha256:bd739d786721fe702ce64570658fb7dc63512b3583efaae80de4edb63f2f966f",
+    "ingested": "2026-09-21",
+    "topic": "meta"
+  },
+  "AGENTS.md": {
+    "hash": "sha256:fffb0d45c49c08056a5294f0b9bd101f78037c2c6bb336fb02b817ad3d0d540d",
+    "ingested": "2026-09-21",
+    "topic": "meta"
+  },
+  "01-TOOLS/README.md": {
+    "hash": "sha256:844b2b292328fcbfca4de5bad5138342ec07a59a453bc90619567ceca23e5dd6",
+    "ingested": "2026-09-21",
+    "topic": "operations"
+  }
+}

@@ -1,0 +1,64 @@
+version: 1
+project:
+  root: .
+  stacks: [java-17, idempiere-12, osgi, postgresql]
+  package_managers: [maven]
+  monorepo: false
+  signals:
+    - pom.xml declares org.idempiere.parent 12.0.0-SNAPSHOT and eclipse-plugin packaging
+    - META-INF/MANIFEST.MF declares OSGi bundle and JavaSE-11
+    - Java 17 and Maven 3.9.10 available locally
+    - active pom.xml relativePath is absent in this root; an isolated reactor resolves the iDempiere 12 parent and full target platform as documented in tests/nesting/build.md
+    - no integrated Maven test runner; existing smoke-test sources are executed ad hoc
+    - SQL and 2Pack present but not executed or verified
+sdd:
+  artifact_store: 02-DOCS/wiki/sdd
+  execution_mode: interactive
+  registry_path: .rsc/skill-registry.json
+  review_budget:
+    line_budget: 400
+    file_budget: 12
+  delivery_strategy:
+    default: ask-on-risk
+testing:
+  strict_tdd: true
+  runners: [junit-5]
+  commands:
+    apply:
+      - mvn -q -f tests/nesting/pom.xml test
+    verify:
+      - ./tests/nesting/verify.sh
+  gaps:
+    - Recreate the documented isolated iDempiere 12 reactor if its temporary /tmp workspace is unavailable.
+    - Validate AD/2Pack only in an explicitly approved disposable iDempiere environment.
+phase_rules:
+  proposal: optional-on-ambiguity
+  specify: requires intent or proposal
+  plan: requires spec
+  tasks: requires plan and spec
+  analyze: requires spec plan tasks
+  implement: requires analyze pass, strict_tdd when testing.strict_tdd is true
+  verify: requires spec tasks evidence
+  archive: requires verify record and review/ship outcome
+models:
+  enabled: false
+  provider: openai
+  tiers:
+    heavy: gpt-5.1
+    balanced: gpt-5.1-mini
+    light: gpt-5.1-nano
+  phases:
+    constitution: heavy
+    specify: balanced
+    clarify: balanced
+    plan: heavy
+    tasks: balanced
+    analyze: heavy
+    implement: balanced
+    verify: balanced
+    review: heavy
+    ship: light
+    debug: heavy
+    worktrees: light
+    sdd-init: light
+  overrides: {}
